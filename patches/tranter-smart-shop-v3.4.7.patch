@@ -1,0 +1,107 @@
+--- a/tranter-smart-shop/tranter-smart-shop.php
++++ b/tranter-smart-shop/tranter-smart-shop.php
+@@ -3,7 +3,7 @@
+  * Plugin Name: Tranter Smart Shop
+  * Plugin URI: https://tranter-it.com
+  * Description: Custom WooCommerce store enhancements for Tranter Smart Solutions: store grid, featured products, quote requests, product details, comparison and product specifications, customer wishlist, account quote history and a responsive Tranter header system.
+- * Version: 3.4.6
++ * Version: 3.4.7
+@@ -13,7 +13,7 @@
+ final class Tranter_Smart_Shop {
+-    const VERSION = '3.4.6';
++    const VERSION = '3.4.7';
+@@ -749,6 +749,8 @@
+         $show_quote = get_post_meta($product_id, '_tranter_show_quote', true) === 'yes';
+         $badges = $this->product_badges($product_id, $product);
++        $categories = get_the_terms($product_id, 'product_cat');
++        $category_label = (!is_wp_error($categories) && !empty($categories)) ? $categories[0]->name : 'Smart Device';
+@@ -766,6 +768,7 @@
+             </a>
+             <div class="tranter-product-body">
++                <span class="tranter-product-type-chip"><?php echo esc_html($category_label); ?></span>
+                 <h3><a href="<?php echo esc_url($permalink); ?>"><?php echo esc_html($title); ?></a></h3>
+@@ -1003,18 +1006,25 @@
+             </div>
+         </section>
++        <section class="tranter-trust-band" aria-label="Smart solutions capabilities">
++            <div class="tranter-trust-band-inner">
++                <div class="tranter-trust-item"><strong>Multi-sector</strong><span>Solutions for homes, offices, industry and infrastructure</span></div>
++                <div class="tranter-trust-item"><strong>Integrated</strong><span>Devices, connectivity and deployment support in one place</span></div>
++                <div class="tranter-trust-item"><strong>Project-ready</strong><span>Guidance from product selection through implementation</span></div>
++                <div class="tranter-trust-item"><strong>Supported</strong><span>Local consultation and after-sales coordination</span></div>
++            </div>
++        </section>
+@@
+-            ['Remote Monitoring', 'Track infrastructure conditions from anywhere.', 'remote monitoring'],
+-            ['Asset Tracking', 'Monitor mobile and fixed assets in real time.', 'asset tracking'],
+-            ['Smart Metering', 'Support utility, water and energy visibility.', 'smart metering'],
+-            ['Environmental Monitoring', 'Measure air, soil, pressure and facility conditions.', 'environmental monitoring'],
+-            ['Facility Management', 'Improve safety, maintenance and operational awareness.', 'facility monitoring'],
++            ['Remote Monitoring', 'Track infrastructure conditions from anywhere.', 'remote monitoring', 'solution-remote-monitoring.jpg'],
++            ['Asset Tracking', 'Monitor mobile and fixed assets in real time.', 'asset tracking', 'solution-asset-tracking.jpg'],
++            ['Smart Metering', 'Support utility, water and energy visibility.', 'smart metering', 'solution-smart-metering.jpg'],
++            ['Environmental Monitoring', 'Measure air, soil, pressure and facility conditions.', 'environmental monitoring', 'solution-environmental-monitoring.jpg'],
++            ['Facility Management', 'Improve safety, maintenance and operational awareness.', 'facility monitoring', 'solution-facility-management.jpg'],
+         ];
+-        $solution_image = plugins_url('assets/images/solution-path-blueprint.png', __FILE__);
+@@
+-                <?php foreach ($solutions as $index => $item): ?><a class="tranter-solution-card" style="--solution-image:url('<?php echo esc_url($solution_image); ?>');--solution-position:<?php echo esc_attr(18 + ($index * 16)); ?>% center" href="<?php echo esc_url(add_query_arg('tranter_search', rawurlencode($item[2]), $this->store_url())); ?>"><span class="tranter-solution-card-shade" aria-hidden="true"></span><div class="tranter-solution-card-content"><h3><?php echo esc_html($item[0]); ?></h3><p><?php echo esc_html($item[1]); ?></p><span>Explore →</span></div></a><?php endforeach; ?>
++                <?php foreach ($solutions as $item):
++                    $solution_image = plugins_url('assets/images/' . $item[3], __FILE__); ?>
++                    <a class="tranter-solution-card" style="--solution-image:url('<?php echo esc_url($solution_image); ?>')" href="<?php echo esc_url(add_query_arg('tranter_search', rawurlencode($item[2]), $this->store_url())); ?>">
++                        <span class="tranter-solution-card-shade" aria-hidden="true"></span>
++                        <div class="tranter-solution-card-content"><h3><?php echo esc_html($item[0]); ?></h3><p><?php echo esc_html($item[1]); ?></p><span>Explore →</span></div>
++                    </a>
++                <?php endforeach; ?>
+@@ -1041,7 +1057,7 @@
+-        <section class="tranter-home-section tranter-tech-section">
++        <section id="tranter-technology" class="tranter-home-section tranter-tech-section tranter-technology-dark">
+@@ -1082,14 +1098,6 @@
+-        <section class="tranter-trust-band" aria-label="Smart solutions capabilities">
+-            <div class="tranter-trust-band-inner">
+-                <div class="tranter-trust-item"><strong>Multi-sector</strong><span>Solutions for homes, offices, industry and infrastructure</span></div>
+-                <div class="tranter-trust-item"><strong>Integrated</strong><span>Devices, connectivity and deployment support in one place</span></div>
+-                <div class="tranter-trust-item"><strong>Project-ready</strong><span>Guidance from product selection through implementation</span></div>
+-                <div class="tranter-trust-item"><strong>Supported</strong><span>Local consultation and after-sales coordination</span></div>
+-            </div>
+-        </section>
+@@ -2753,6 +2761,47 @@
++/* v3.4.7 focused homepage stabilisation */
++body #tranter-technology.tranter-technology-dark{
++    background:#041a36!important;
++    background-image:linear-gradient(135deg,#03172f 0%,#07366e 62%,#07554d 100%)!important;
++    color:#fff!important;
++}
++body #tranter-technology.tranter-technology-dark .tranter-section-head h2{
++    color:#fff!important;opacity:1!important;visibility:visible!important;text-shadow:none!important;
++}
++body #tranter-technology.tranter-technology-dark .tranter-tech-pills span{
++    color:#fff!important;background:rgba(255,255,255,.11)!important;
++    border:1px solid rgba(255,255,255,.24)!important;opacity:1!important;
++    box-shadow:inset 0 1px 0 rgba(255,255,255,.15)!important;
++}
++body #tranter-technology.tranter-technology-dark .tranter-tech-pills span:hover,
++body #tranter-technology.tranter-technology-dark .tranter-tech-pills span:focus{
++    color:#10213f!important;background:#d8a417!important;border-color:#f0c64f!important;
++}
++body .tranter-partners-section .tranter-section-head h2{color:#10213f!important}
++body .tranter-partners-section .tranter-section-head p,
++body .tranter-partners-section .tranter-partner-seo-copy{color:#52627a!important}
++.tranter-product-type-chip{
++    display:inline-flex;align-items:center;max-width:100%;margin:0 0 8px;padding:5px 9px;
++    border-radius:999px;background:rgba(0,155,85,.10);border:1px solid rgba(0,155,85,.20);
++    color:#08734f;font-size:10px;line-height:1;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
++}
++.tranter-solution-card{background-position:center!important;background-size:cover!important}
++.tranter-solutions-section .tranter-solution-card:hover{background-size:108%!important}
++.tranter-why-section{padding-bottom:28px!important}
++.tranter-trust-band{position:relative;z-index:2}
++.tranter-trust-band + .tranter-solutions-section{margin-top:0!important;padding-top:34px!important}
++.tranter-trust-band + .tranter-solutions-section:before{
++    content:"";position:absolute;top:0;left:clamp(18px,5vw,72px);right:clamp(18px,5vw,72px);height:1px;
++    background:linear-gradient(90deg,transparent,rgba(141,255,203,.28),rgba(216,164,23,.25),transparent);
++}
++@media(max-width:680px){
++    .tranter-product-type-chip{font-size:9px;padding:4px 8px;margin-bottom:6px}
++    .tranter-trust-band + .tranter-solutions-section{padding-top:28px!important}
++}
